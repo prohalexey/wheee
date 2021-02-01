@@ -1,0 +1,50 @@
+version: '3.2'
+
+services:
+  app:
+    build: docker/php
+    image: wheee
+    container_name: wheee-app
+    depends_on:
+      - db
+      - nginx
+    working_dir: /var/www/wheee
+    volumes:
+      - ./:/var/www/wheee
+    networks:
+      - wheee
+
+  nginx:
+    build: docker/nginx
+    container_name: wheee-nginx
+    volumes:
+      - ./:/var/www/wheee
+      - ./docker/nginx/conf.d/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites-enabled:/etc/nginx/sites-enabled/
+      - ./docker/nginx/certs:/etc/nginx/certs:delegated
+    networks:
+      - wheee
+    ports:
+      - 80:80
+      - 443:443
+
+  db:
+    image: postgres:latest
+    container_name: wheee-db
+    volumes:
+      - "wheee_pg_data:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_USER=wheee
+      - POSTGRES_PASSWORD=wheeepwd
+      - POSTGRES_DB=wheee
+    ports:
+      - 5432:5432
+    networks:
+      - wheee
+
+networks:
+  wheee:
+    driver: bridge
+
+volumes:
+  wheee_pg_data: { }
