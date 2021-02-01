@@ -10,7 +10,7 @@ class SeedController extends Controller
 {
     public function actionIndex()
     {
-        $batchNum = 200;
+        $batchNum = 10;
         $batchSize = 100000;
 
         $faker = FakerFactory::create();
